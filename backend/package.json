@@ -1,0 +1,27 @@
+{
+  "name": "book-borrow-management-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend API cho ứng dụng quản lý mượn sách",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "format": "prettier --write ."
+  },
+  "keywords": [
+    "express",
+    "mongodb",
+    "book-management"
+  ],
+  "type": "module",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "mongodb": "^7.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14",
+    "prettier": "^3.9.6"
+  }
+}
