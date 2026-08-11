@@ -24,6 +24,16 @@ export async function connectDatabase() {
   console.log("Kết nối cơ sở dữ liệu thành công!");
 }
 
+export async function createDatabaseIndexes() {
+  const database = getDatabase();
+
+  await database
+    .collection("NhaXuatBan")
+    .createIndex({ MaNXB: 1 }, { unique: true });
+
+  console.log("Đã kiểm tra các index của MongoDB");
+}
+
 export function getDatabase() {
   if (!database) {
     throw new Error("MongoDB chưa được kết nối");
