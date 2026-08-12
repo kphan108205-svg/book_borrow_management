@@ -22,20 +22,18 @@ export async function createNhaXuatBan(nhaXuatBanData) {
   const database = getDatabase();
   const collection = database.collection(COLLECTION_NAME);
 
-  const maNXB = nhaXuatBanData.MaNXB.trim();
-  const tenNXB = nhaXuatBanData.TenNXB.trim();
-  const diaChi = nhaXuatBanData.DiaChi.trim();
-
-  const nhaXuatBanDaTonTai = await collection.findOne({ maNXB: maNXB });
+  const nhaXuatBanDaTonTai = await collection.findOne({
+    MaNXB: nhaXuatBanData.MaNXB,
+  });
 
   if (nhaXuatBanDaTonTai) {
-    return nulll;
+    return null;
   }
 
   const nhaXuatBanMoi = {
-    MaNXB: maNXB,
-    TenNXB: tenNXB,
-    DiaChi: diaChi,
+    MaNXB: nhaXuatBanData.MaNXB,
+    TenNXB: nhaXuatBanData.TenNXB,
+    DiaChi: nhaXuatBanData.DiaChi,
   };
 
   const result = await collection.insertOne(nhaXuatBanMoi);
@@ -49,12 +47,13 @@ export async function createNhaXuatBan(nhaXuatBanData) {
 export async function updateNhaXuatBan(maNXB, nhaXuatBanData) {
   const database = getDatabase();
   const collection = database.collection(COLLECTION_NAME);
+
   const result = await collection.updateOne(
     { MaNXB: maNXB },
     {
       $set: {
-        TenNXB: nhaXuatBanData.TenNXB.trim(),
-        DiaChi: nhaXuatBanData.DiaChi.trim(),
+        TenNXB: nhaXuatBanData.TenNXB,
+        DiaChi: nhaXuatBanData.DiaChi,
       },
     },
   );
@@ -68,10 +67,10 @@ export async function updateNhaXuatBan(maNXB, nhaXuatBanData) {
 
 export async function deleteNhaXuatBan(maNXB) {
   const database = getDatabase();
-  const collectionNhaXuatBan = database.collection(COLLECTION_NAME);
-  const collectionSach = database.collection("Sach");
+  const nhaXuatBanCollection = database.collection(COLLECTION_NAME);
+  const sachCollection = database.collection("Sach");
 
-  const nhaXuatBan = await findNhaXuatBanByMa(maNXB);
+  const nhaXuatBan = await nhaXuatBanCollection.findOne({ MaNXB: maNXB });
 
   if (!nhaXuatBan) {
     return {
@@ -79,7 +78,7 @@ export async function deleteNhaXuatBan(maNXB) {
     };
   }
 
-  const sachDangThamChieu = await collectionSach.findOne({ MaNXB: maNXB });
+  const sachDangThamChieu = await sachCollection.findOne({ MaNXB: maNXB });
 
   if (sachDangThamChieu) {
     return {
@@ -87,7 +86,7 @@ export async function deleteNhaXuatBan(maNXB) {
     };
   }
 
-  await collectionNhaXuatBan.deleteOne({ MaNXB: maNXB });
+  await nhaXuatBanCollection.deleteOne({ MaNXB: maNXB });
 
   return {
     status: "deleted",

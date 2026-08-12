@@ -18,7 +18,7 @@ export async function getAllNhaXuatBan(req, res, next) {
 
 export async function getNhaXuatBanByMa(req, res, next) {
   try {
-    const maNXB = req.params.maNXB.trim();
+    const { maNXB } = req.validatedParams;
 
     const nhaXuatBan = await findNhaXuatBanByMa(maNXB);
 
@@ -36,27 +36,13 @@ export async function getNhaXuatBanByMa(req, res, next) {
 
 export async function addNhaXuatBan(req, res, next) {
   try {
-    const { MaNXB, TenNXB, DiaChi } = req.body;
+    const nhaXuatBanData = req.validatedData;
 
-    const cacTruongHopLe = [MaNXB, TenNXB, DiaChi].every(
-      (value) => typeof value === "string" && value.trim() !== "",
-    );
-
-    if (!cacTruongHopLe) {
-      return res.status(400).json({
-        message: "Dữ liệu không hợp lệ",
-      });
-    }
-
-    const nhaXuatBanMoi = await createNhaXuatBan({
-      MaNXB,
-      TenNXB,
-      DiaChi,
-    });
+    const nhaXuatBanMoi = await createNhaXuatBan(nhaXuatBanData);
 
     if (!nhaXuatBanMoi) {
       return res.status(409).json({
-        message: `Mã nhà xuất bản ${MaNXB.trim()} đã tồn tại`,
+        message: `Mã nhà xuất bản ${nhaXuatBanData.MaNXB} đã tồn tại`,
       });
     }
 
@@ -71,23 +57,10 @@ export async function addNhaXuatBan(req, res, next) {
 
 export async function editNhaXuatBan(req, res, next) {
   try {
-    const maNXB = req.params.maNXB.trim();
-    const { TenNXB, DiaChi } = req.body;
+    const { maNXB } = req.validatedParams;
+    const nhaXuatBanData = req.validatedData;
 
-    const cacTruongHopLe = [TenNXB, DiaChi].every(
-      (value) => typeof value === "string" && value.trim() !== "",
-    );
-
-    if (!cacTruongHopLe) {
-      return res.status(400).json({
-        message: "Dữ liệu không hợp lệ",
-      });
-    }
-
-    const nhaXuatBanCapNhat = await updateNhaXuatBan(maNXB, {
-      TenNXB,
-      DiaChi,
-    });
+    const nhaXuatBanCapNhat = await updateNhaXuatBan(maNXB, nhaXuatBanData);
 
     if (!nhaXuatBanCapNhat) {
       return res.status(404).json({
@@ -106,7 +79,7 @@ export async function editNhaXuatBan(req, res, next) {
 
 export async function removeNhaXuatBan(req, res, next) {
   try {
-    const maNXB = req.params.maNXB.trim();
+    const { maNXB } = req.validatedParams;
 
     const result = await deleteNhaXuatBan(maNXB);
 

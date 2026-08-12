@@ -1,6 +1,12 @@
 import express from "express";
 
 import {
+  validateCreateNhaXuatBan,
+  validateUpdateNhaXuatBan,
+  validateMaNXBParam,
+} from "../middlewares/nha-xuat-ban.middleware.js";
+
+import {
   addNhaXuatBan,
   editNhaXuatBan,
   removeNhaXuatBan,
@@ -11,9 +17,14 @@ import {
 const router = express.Router();
 
 router.get("/", getAllNhaXuatBan);
-router.get("/:maNXB", getNhaXuatBanByMa);
-router.post("/", addNhaXuatBan);
-router.put("/:maNXB", editNhaXuatBan);
-router.delete("/:maNXB", removeNhaXuatBan);
+router.get("/:maNXB", validateMaNXBParam, getNhaXuatBanByMa);
+router.post("/", validateCreateNhaXuatBan, addNhaXuatBan);
+router.put(
+  "/:maNXB",
+  validateMaNXBParam,
+  validateUpdateNhaXuatBan,
+  editNhaXuatBan,
+);
+router.delete("/:maNXB", validateMaNXBParam, removeNhaXuatBan);
 
 export default router;
