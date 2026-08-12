@@ -31,6 +31,10 @@ export async function createDatabaseIndexes() {
     .collection("NhaXuatBan")
     .createIndex({ MaNXB: 1 }, { unique: true });
 
+  await database
+    .collection("Sach")
+    .createIndex({ MaSach: 1 }, { unique: true });
+
   console.log("Đã kiểm tra các index của MongoDB");
 }
 

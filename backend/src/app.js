@@ -2,6 +2,7 @@ import cors from "cors";
 import express from "express";
 
 import nhaXuatBanRouter from "./routes/nha-xuat_ban.route.js";
+import sachRouter from "./routes/sach.route.js";
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/nha-xuat-ban", nhaXuatBanRouter);
+app.use("/api/sach", sachRouter);
 
 app.use((error, req, res, next) => {
   console.log(error);
