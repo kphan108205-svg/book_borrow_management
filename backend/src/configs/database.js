@@ -35,6 +35,10 @@ export async function createDatabaseIndexes() {
     .collection("Sach")
     .createIndex({ MaSach: 1 }, { unique: true });
 
+  await database
+    .collection("DocGia")
+    .createIndex({ MaDocGia: 1 }, { unique: true });
+
   console.log("Đã kiểm tra các index của MongoDB");
 }
 
