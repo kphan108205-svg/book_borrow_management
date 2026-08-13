@@ -4,6 +4,7 @@ import express from "express";
 import nhaXuatBanRouter from "./routes/nha-xuat_ban.route.js";
 import sachRouter from "./routes/sach.route.js";
 import docGiaRouter from "./routes/doc-gia.route.js";
+import nhanVienRouter from "./routes/nhan-vien.route.js";
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.get("/api/health", (req, res) => {
 app.use("/api/nha-xuat-ban", nhaXuatBanRouter);
 app.use("/api/sach", sachRouter);
 app.use("/api/doc-gia", docGiaRouter);
+app.use("/api/nhan-vien", nhanVienRouter);
 
 app.use((error, req, res, next) => {
   console.log(error);
