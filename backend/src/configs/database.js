@@ -43,6 +43,33 @@ export async function createDatabaseIndexes() {
     .collection("NhanVien")
     .createIndex({ MSNV: 1 }, { unique: true });
 
+  await database
+    .collection("TheoDoiMuonSach")
+    .createIndex({ NgayTra: 1, HanTra: 1 });
+
+  await database
+    .collection("TheoDoiMuonSach")
+    .createIndex({ MaSach: 1, NgayTra: 1 });
+
+  await database
+    .collection("TheoDoiMuonSach")
+    .createIndex({ MaDocGia: 1, NgayTra: 1 });
+
+  await database
+    .collection("TheoDoiMuonSach")
+    .createIndex({ MSNV: 1, NgayTra: 1 });
+
+  await database.collection("TheoDoiMuonSach").createIndex(
+    { MaDocGia: 1, MaSach: 1 },
+    {
+      unique: true,
+      partialFilterExpression: {
+        NgayTra: null,
+      },
+      name: "unique_active_reader_book",
+    },
+  );
+
   console.log("Đã kiểm tra các index của MongoDB");
 }
 
