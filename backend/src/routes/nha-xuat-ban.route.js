@@ -1,12 +1,6 @@
 import express from "express";
 
 import {
-  validateCreateNhaXuatBan,
-  validateUpdateNhaXuatBan,
-  validateMaNXBParam,
-} from "../middlewares/nha-xuat-ban.middleware.js";
-
-import {
   addNhaXuatBan,
   editNhaXuatBan,
   removeNhaXuatBan,
@@ -14,13 +8,21 @@ import {
   getNhaXuatBanByMa,
 } from "../controllers/nha-xuat-ban.controller.js";
 
+import {
+  validateCreateNhaXuatBan,
+  validateUpdateNhaXuatBan,
+  validateMaNXBParam,
+} from "../middlewares/nha-xuat-ban.middleware.js";
+
 import { authenticateToken } from "../middlewares/auth.middleware.js";
+
+import { validateListQuery } from "../middlewares/list-query.middleware.js";
 
 const router = express.Router();
 
 router.use(authenticateToken);
 
-router.get("/", getAllNhaXuatBan);
+router.get("/", validateListQuery, getAllNhaXuatBan);
 router.get("/:maNXB", validateMaNXBParam, getNhaXuatBanByMa);
 router.post("/", validateCreateNhaXuatBan, addNhaXuatBan);
 router.put(

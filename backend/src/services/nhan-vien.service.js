@@ -1,6 +1,7 @@
-import bcrypt, { compare } from "bcrypt";
+import bcrypt from "bcrypt";
 
 import { getDatabase } from "../configs/database.js";
+import { escapeRegex } from "../utils/regex.js";
 
 const COLLECTION_NAME = "NhanVien";
 const SALT_ROUNDS = 12;
@@ -25,16 +26,59 @@ export async function findNhanVienByMSNV(msnv) {
   return excludePasswordHash(nhanVien);
 }
 
-export async function findAllNhanVien() {
+export async function findAllNhanVien({ page, limit, search }) {
   const database = getDatabase();
+  const collection = database.collection(COLLECTION_NAME);
 
-  const danhSachNhanVien = await database
-    .collection(COLLECTION_NAME)
-    .find({})
-    .sort({ MSNV: 1 })
-    .toArray();
+  const filter = {};
 
-  return danhSachNhanVien.map(excludePasswordHash);
+  if (search) {
+    const searchPattern = new RegExp(escapeRegex(search), "i");
+
+    filter.$or = [
+      {
+        MSNV: searchPattern,
+      },
+      {
+        HoTenNV: searchPattern,
+      },
+      {
+        ChucVu: searchPattern,
+      },
+      {
+        DiaChi: searchPattern,
+      },
+      {
+        SoDienThoai: searchPattern,
+      },
+    ];
+  }
+
+  const skip = (page - 1) * limit;
+
+  const [data, totalItems] = await Promise.all([
+    collection
+      .find(filter)
+      .project({
+        PasswordHash: 0,
+      })
+      .sort({ MSNV: 1 })
+      .skip(skip)
+      .limit(limit)
+      .toArray(),
+
+    collection.countDocuments(filter),
+  ]);
+
+  return {
+    data,
+    pagination: {
+      page,
+      limit,
+      totalItems,
+      totalPages: Math.ceil(totalItems / limit),
+    },
+  };
 }
 
 export async function createNhanVien(nhanVienData) {

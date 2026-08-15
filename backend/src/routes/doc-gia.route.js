@@ -1,12 +1,6 @@
 import express from "express";
 
 import {
-  validateCreateDocGia,
-  validateUpdateDocGia,
-  validateMaDocGiaParam,
-} from "../middlewares/doc-gia.middleware.js";
-
-import {
   addDocGia,
   editDocGia,
   removeDocGia,
@@ -14,13 +8,21 @@ import {
   getDocGiaByMa,
 } from "../controllers/doc-gia.controller.js";
 
+import {
+  validateCreateDocGia,
+  validateUpdateDocGia,
+  validateMaDocGiaParam,
+} from "../middlewares/doc-gia.middleware.js";
+
 import { authenticateToken } from "../middlewares/auth.middleware.js";
+
+import { validateListQuery } from "../middlewares/list-query.middleware.js";
 
 const router = express.Router();
 
 router.use(authenticateToken);
 
-router.get("/", getAllDocGia);
+router.get("/", validateListQuery, getAllDocGia);
 router.get("/:maDocGia", validateMaDocGiaParam, getDocGiaByMa);
 router.post("/", validateCreateDocGia, addDocGia);
 router.put(

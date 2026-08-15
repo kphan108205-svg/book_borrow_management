@@ -1,4 +1,5 @@
 import { getDatabase } from "../configs/database.js";
+import { escapeRegex } from "../utils/regex.js";
 
 const COLLECTION_NAME = "TheoDoiMuonSach";
 
@@ -8,7 +9,7 @@ export async function findMuonSachById(id) {
   return database.collection(COLLECTION_NAME).findOne({ _id: id });
 }
 
-export async function findAllMuonSach(status) {
+export async function findAllMuonSach({ status, page, limit, search }) {
   const database = getDatabase();
   const collection = database.collection(COLLECTION_NAME);
 
@@ -40,101 +41,170 @@ export async function findAllMuonSach(status) {
     };
   }
 
-  return collection
-    .aggregate([
-      {
-        $match: matchCondition,
+  const pipeline = [
+    {
+      $match: matchCondition,
+    },
+    {
+      $lookup: {
+        from: "DocGia",
+        localField: "MaDocGia",
+        foreignField: "MaDocGia",
+        as: "DocGia",
       },
-      {
-        $lookup: {
-          from: "DocGia",
-          localField: "MaDocGia",
-          foreignField: "MaDocGia",
-          as: "DocGia",
-        },
+    },
+    {
+      $lookup: {
+        from: "Sach",
+        localField: "MaSach",
+        foreignField: "MaSach",
+        as: "Sach",
       },
-      {
-        $lookup: {
-          from: "Sach",
-          localField: "MaSach",
-          foreignField: "MaSach",
-          as: "Sach",
-        },
+    },
+    {
+      $lookup: {
+        from: "NhanVien",
+        localField: "MSNV",
+        foreignField: "MSNV",
+        as: "NhanVien",
       },
-      {
-        $lookup: {
-          from: "NhanVien",
-          localField: "MSNV",
-          foreignField: "MSNV",
-          as: "NhanVien",
-        },
-      },
-      {
-        $addFields: {
-          TrangThai: {
-            $switch: {
-              branches: [
-                {
-                  case: {
-                    $ne: ["$NgayTra", null],
-                  },
-                  then: "da-tra",
+    },
+    {
+      $addFields: {
+        TrangThai: {
+          $switch: {
+            branches: [
+              {
+                case: {
+                  $ne: ["$NgayTra", null],
                 },
-                {
-                  case: {
-                    $lt: ["$HanTra", todayUTC],
-                  },
-                  then: "qua-han",
+                then: "da-tra",
+              },
+              {
+                case: {
+                  $lt: ["$HanTra", todayUTC],
                 },
-              ],
-              default: "dang-muon",
-            },
+                then: "qua-han",
+              },
+            ],
+            default: "dang-muon",
           },
         },
       },
-      {
-        $project: {
-          _id: 1,
-          MaDocGia: 1,
-          MaSach: 1,
-          MSNV: 1,
-          NgayMuon: 1,
-          HanTra: 1,
-          NgayTra: 1,
-          TrangThai: 1,
-          ThongTinDocGia: {
-            HoLot: {
-              $arrayElemAt: ["$DocGia.HoLot", 0],
-            },
-            Ten: {
-              $arrayElemAt: ["$DocGia.Ten", 0],
-            },
+    },
+  ];
+
+  if (search) {
+    const searchPattern = new RegExp(escapeRegex(search), "i");
+
+    pipeline.push({
+      $match: {
+        $or: [
+          {
+            MaDocGia: searchPattern,
           },
-          ThongTinSach: {
-            TenSach: {
-              $arrayElemAt: ["$Sach.TenSach", 0],
-            },
-            NguonGocTacGia: {
-              $arrayElemAt: ["$Sach.NguonGocTacGia", 0],
-            },
+          {
+            MaSach: searchPattern,
           },
-          ThongTinNhanVien: {
-            HoTenNV: {
-              $arrayElemAt: ["$NhanVien.HoTenNV", 0],
-            },
-            ChucVu: {
-              $arrayElemAt: ["$NhanVien.ChucVu", 0],
-            },
+          {
+            MSNV: searchPattern,
+          },
+          {
+            "DocGia.HoLot": searchPattern,
+          },
+          {
+            "DocGia.Ten": searchPattern,
+          },
+          {
+            "Sach.TenSach": searchPattern,
+          },
+          {
+            "Sach.NguonGocTacGia": searchPattern,
+          },
+          {
+            "NhanVien.HoTenNV": searchPattern,
+          },
+        ],
+      },
+    });
+  }
+
+  const skip = (page - 1) * limit;
+
+  pipeline.push(
+    {
+      $project: {
+        _id: 1,
+        MaDocGia: 1,
+        MaSach: 1,
+        MSNV: 1,
+        NgayMuon: 1,
+        HanTra: 1,
+        NgayTra: 1,
+        TrangThai: 1,
+        ThongTinDocGia: {
+          HoLot: {
+            $arrayElemAt: ["$DocGia.HoLot", 0],
+          },
+          Ten: {
+            $arrayElemAt: ["$DocGia.Ten", 0],
+          },
+        },
+        ThongTinSach: {
+          TenSach: {
+            $arrayElemAt: ["$Sach.TenSach", 0],
+          },
+          NguonGocTacGia: {
+            $arrayElemAt: ["$Sach.NguonGocTacGia", 0],
+          },
+        },
+        ThongTinNhanVien: {
+          HoTenNV: {
+            $arrayElemAt: ["$NhanVien.HoTenNV", 0],
+          },
+          ChucVu: {
+            $arrayElemAt: ["$NhanVien.ChucVu", 0],
           },
         },
       },
-      {
-        $sort: {
-          NgayMuon: -1,
-        },
+    },
+    {
+      $facet: {
+        data: [
+          {
+            $sort: {
+              NgayMuon: -1,
+            },
+          },
+          {
+            $skip: skip,
+          },
+          {
+            $limit: limit,
+          },
+        ],
+        metadata: [
+          {
+            $count: "totalItems",
+          },
+        ],
       },
-    ])
-    .toArray();
+    },
+  );
+
+  const [result] = await collection.aggregate(pipeline).toArray();
+
+  const totalItems = result.metadata[0]?.totalItems ?? 0;
+
+  return {
+    data: result.data,
+    pagination: {
+      page,
+      limit,
+      totalItems,
+      totalPages: Math.ceil(totalItems / limit),
+    },
+  };
 }
 
 export async function createMuonSach(muonSachData, msnv) {

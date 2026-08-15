@@ -8,7 +8,7 @@ import {
 
 export async function getAllNhaXuatBan(req, res, next) {
   try {
-    const danhSachNhaXuatBan = await findAllNhaXuatBan();
+    const danhSachNhaXuatBan = await findAllNhaXuatBan(req.validatedQuery);
 
     return res.status(200).json(danhSachNhaXuatBan);
   } catch (error) {

@@ -8,7 +8,7 @@ import {
 
 export async function getAllDocGia(req, res, next) {
   try {
-    const danhSachDocGia = await findAllDocGia();
+    const danhSachDocGia = await findAllDocGia(req.validatedQuery);
 
     return res.status(200).json(danhSachDocGia);
   } catch (error) {

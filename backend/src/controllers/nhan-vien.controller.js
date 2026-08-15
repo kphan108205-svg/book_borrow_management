@@ -9,7 +9,7 @@ import {
 
 export async function getAllNhanVien(req, res, next) {
   try {
-    const danhSachNhanVien = await findAllNhanVien();
+    const danhSachNhanVien = await findAllNhanVien(req.validatedQuery);
 
     return res.status(200).json(danhSachNhanVien);
   } catch (error) {

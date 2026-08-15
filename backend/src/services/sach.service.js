@@ -1,4 +1,5 @@
 import { getDatabase } from "../configs/database.js";
+import { escapeRegex } from "../utils/regex.js";
 
 const COLLECTION_NAME = "Sach";
 
@@ -8,14 +9,50 @@ export async function findSachByMa(maSach) {
   return database.collection(COLLECTION_NAME).findOne({ MaSach: maSach });
 }
 
-export async function findAllSach() {
+export async function findAllSach({ page, limit, search }) {
   const database = getDatabase();
+  const collection = database.collection(COLLECTION_NAME);
 
-  return database
-    .collection(COLLECTION_NAME)
-    .find({})
-    .sort({ MaSach: 1 })
-    .toArray();
+  const filter = {};
+
+  if (search) {
+    const searchPattern = new RegExp(escapeRegex(search), "i");
+
+    filter.$or = [
+      {
+        MaSach: searchPattern,
+      },
+      {
+        TenSach: searchPattern,
+      },
+      {
+        NguonGocTacGia: searchPattern,
+      },
+    ];
+  }
+
+  const skip = (page - 1) * limit;
+
+  const [data, totalItems] = await Promise.all([
+    collection
+      .find(filter)
+      .sort({ MaSach: 1 })
+      .skip(skip)
+      .limit(limit)
+      .toArray(),
+
+    collection.countDocuments(filter),
+  ]);
+
+  return {
+    data,
+    pagination: {
+      page,
+      limit,
+      totalItems,
+      totalPages: Math.ceil(totalItems / limit),
+    },
+  };
 }
 
 export async function createSach(sachData) {

@@ -55,6 +55,7 @@ export function validateBorrowingStatusQuery(req, res, next) {
 
   if (status === undefined) {
     req.validatedQuery = {
+      ...req.validatedQuery,
       status: null,
     };
 
@@ -71,6 +72,7 @@ export function validateBorrowingStatusQuery(req, res, next) {
   }
 
   req.validatedQuery = {
+    ...req.validatedQuery,
     status,
   };
 

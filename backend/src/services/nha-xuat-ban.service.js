@@ -1,4 +1,5 @@
 import { getDatabase } from "../configs/database.js";
+import { escapeRegex } from "../utils/regex.js";
 
 const COLLECTION_NAME = "NhaXuatBan";
 
@@ -8,14 +9,50 @@ export async function findNhaXuatBanByMa(maNXB) {
   return database.collection(COLLECTION_NAME).findOne({ MaNXB: maNXB });
 }
 
-export async function findAllNhaXuatBan() {
+export async function findAllNhaXuatBan({ page, limit, search }) {
   const database = getDatabase();
+  const collection = database.collection(COLLECTION_NAME);
 
-  return database
-    .collection(COLLECTION_NAME)
-    .find({})
-    .sort({ MaNXB: 1 })
-    .toArray();
+  const filter = {};
+
+  if (search) {
+    const searchPattern = new RegExp(escapeRegex(search), "i");
+
+    filter.$or = [
+      {
+        MaNXB: searchPattern,
+      },
+      {
+        TenNXB: searchPattern,
+      },
+      {
+        DiaChi: searchPattern,
+      },
+    ];
+  }
+
+  const skip = (page - 1) * limit;
+
+  const [data, totalItems] = await Promise.all([
+    collection
+      .find(filter)
+      .sort({ MaNXB: 1 })
+      .skip(skip)
+      .limit(limit)
+      .toArray(),
+
+    collection.countDocuments(filter),
+  ]);
+
+  return {
+    data,
+    pagination: {
+      page,
+      limit,
+      totalItems,
+      totalPages: Math.ceil(totalItems / limit),
+    },
+  };
 }
 
 export async function createNhaXuatBan(nhaXuatBanData) {

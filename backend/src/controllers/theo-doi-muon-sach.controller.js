@@ -7,9 +7,7 @@ import {
 
 export async function getAllMuonSach(req, res, next) {
   try {
-    const { status } = req.validatedQuery;
-
-    const danhSachMuonSach = await findAllMuonSach(status);
+    const danhSachMuonSach = await findAllMuonSach(req.validatedQuery);
 
     return res.status(200).json(danhSachMuonSach);
   } catch (error) {

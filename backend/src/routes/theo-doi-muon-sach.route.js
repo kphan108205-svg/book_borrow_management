@@ -15,11 +15,18 @@ import {
 
 import { authenticateToken } from "../middlewares/auth.middleware.js";
 
+import { validateListQuery } from "../middlewares/list-query.middleware.js";
+
 const router = express.Router();
 
 router.use(authenticateToken);
 
-router.get("/", validateBorrowingStatusQuery, getAllMuonSach);
+router.get(
+  "/",
+  validateBorrowingStatusQuery,
+  validateListQuery,
+  getAllMuonSach,
+);
 router.get("/:id", validateBorrowingIdParam, getMuonSachById);
 router.post("/", validateCreateMuonSach, addMuonSach);
 router.patch("/:id/tra-sach", validateBorrowingIdParam, returnBorrowedBook);

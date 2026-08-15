@@ -1,4 +1,5 @@
 import { getDatabase } from "../configs/database.js";
+import { escapeRegex } from "../utils/regex.js";
 
 const COLLECTION_NAME = "DocGia";
 
@@ -8,14 +9,56 @@ export async function findDocGiaByMa(maDocGia) {
   return database.collection(COLLECTION_NAME).findOne({ MaDocGia: maDocGia });
 }
 
-export async function findAllDocGia() {
+export async function findAllDocGia({ page, limit, search }) {
   const database = getDatabase();
+  const collection = database.collection(COLLECTION_NAME);
 
-  return database
-    .collection(COLLECTION_NAME)
-    .find({})
-    .sort({ MaDocGia: 1 })
-    .toArray();
+  const filter = {};
+
+  if (search) {
+    const searchPattern = new RegExp(escapeRegex(search), "i");
+
+    filter.$or = [
+      {
+        MaDocGia: searchPattern,
+      },
+      {
+        HoLot: searchPattern,
+      },
+      {
+        Ten: searchPattern,
+      },
+      {
+        DiaChi: searchPattern,
+      },
+      {
+        DienThoai: searchPattern,
+      },
+    ];
+  }
+
+  const skip = (page - 1) * limit;
+
+  const [data, totalItems] = await Promise.all([
+    collection
+      .find(filter)
+      .sort({ MaDocGia: 1 })
+      .skip(skip)
+      .limit(limit)
+      .toArray(),
+
+    collection.countDocuments(filter),
+  ]);
+
+  return {
+    data,
+    pagination: {
+      page,
+      limit,
+      totalItems,
+      totalPages: Math.ceil(totalItems / limit),
+    },
+  };
 }
 
 export async function createDocGia(docGiaData) {

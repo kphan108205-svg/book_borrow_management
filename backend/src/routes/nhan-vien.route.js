@@ -7,6 +7,15 @@ import {
   validateChangePassword,
 } from "../middlewares/nhan-vien.middleware.js";
 
+import { authenticateToken } from "../middlewares/auth.middleware.js";
+
+import {
+  requireRole,
+  requireSelf,
+} from "../middlewares/authorization.middleware.js";
+
+import { validateListQuery } from "../middlewares/list-query.middleware.js";
+
 import {
   addNhanVien,
   editNhanVien,
@@ -15,13 +24,6 @@ import {
   getAllNhanVien,
   getNhanVienByMSNV,
 } from "../controllers/nhan-vien.controller.js";
-
-import { authenticateToken } from "../middlewares/auth.middleware.js";
-
-import {
-  requireRole,
-  requireSelf,
-} from "../middlewares/authorization.middleware.js";
 
 const router = express.Router();
 
@@ -37,7 +39,7 @@ router.put(
 
 router.use(requireRole("Quản lý thư viện"));
 
-router.get("/", getAllNhanVien);
+router.get("/", validateListQuery, getAllNhanVien);
 router.get("/:msnv", validateMSNVParam, getNhanVienByMSNV);
 router.post("/", validateCreateNhanVien, addNhanVien);
 router.put("/:msnv", validateMSNVParam, validateUpdateNhanVien, editNhanVien);
