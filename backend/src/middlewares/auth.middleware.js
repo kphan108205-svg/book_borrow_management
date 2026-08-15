@@ -1,8 +1,6 @@
 import jwt from "jsonwebtoken";
 
-function isNonEmptyString(value) {
-  return typeof value === "string" && value.trim() !== "";
-}
+import { isNonEmptyString } from "../utils/validation.js";
 
 export function validateLogin(req, res, next) {
   const { MSNV, Password } = req.body;

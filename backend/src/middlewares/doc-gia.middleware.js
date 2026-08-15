@@ -1,28 +1,4 @@
-function isNonEmptyString(value) {
-  return typeof value === "string" && value.trim() !== "";
-}
-
-function parseDateOnly(value) {
-  if (typeof value !== "string") {
-    return null;
-  }
-
-  const normalizedValue = value.trim();
-
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(normalizedValue)) {
-    return null;
-  }
-
-  const [year, month, day] = normalizedValue.split("-").map(Number);
-  const date = new Date(Date.UTC(year, month - 1, day));
-
-  const isValidDate =
-    date.getUTCFullYear() === year &&
-    date.getUTCMonth() === month - 1 &&
-    date.getUTCDate() === day;
-
-  return isValidDate ? date : null;
-}
+import { isNonEmptyString, parseDateOnly } from "../utils/validation.js";
 
 export async function validateDocGiaFields(req, res, next, includeMaDocGia) {
   const { MaDocGia, HoLot, Ten, NgaySinh, Phai, DiaChi, DienThoai } = req.body;

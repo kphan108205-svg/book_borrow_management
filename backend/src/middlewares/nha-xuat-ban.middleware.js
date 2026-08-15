@@ -1,6 +1,4 @@
-function isNonEmptyString(value) {
-  return typeof value === "string" && value.trim() !== "";
-}
+import { isNonEmptyString } from "../utils/validation.js";
 
 export function validateCreateNhaXuatBan(req, res, next) {
   const { MaNXB, TenNXB, DiaChi } = req.body;

@@ -1,6 +1,4 @@
-function isNonEmptyString(value) {
-  return typeof value === "string" && value.trim() !== "";
-}
+import { isNonEmptyString } from "../utils/validation.js";
 
 function validateSachFields(req, res, next, includeMaSach) {
   const {

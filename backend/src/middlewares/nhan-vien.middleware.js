@@ -1,6 +1,4 @@
-function isNonEmptyString(value) {
-  return typeof value === "string" && value.trim() !== "";
-}
+import { isNonEmptyString } from "../utils/validation.js";
 
 export function validateNhanVienFields(req, res, next, includeAccountFields) {
   const { MSNV, HoTenNV, Password, ChucVu, DiaChi, SoDienThoai } = req.body;
