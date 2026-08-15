@@ -1,0 +1,26 @@
+{
+  "name": "book-borrow-management-frontend",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^7.3.1",
+    "axios": "^1.19.0",
+    "bootstrap": "^5.3.8",
+    "vee-validate": "^4.15.1",
+    "vue": "^3.5.40",
+    "vue-router": "^5.2.0",
+    "yup": "^1.7.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.8",
+    "prettier": "^3.9.6",
+    "vite": "^8.2.0"
+  }
+}
