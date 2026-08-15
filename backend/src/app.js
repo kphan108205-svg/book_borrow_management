@@ -1,7 +1,7 @@
 import cors from "cors";
 import express from "express";
 
-import nhaXuatBanRouter from "./routes/nha-xuat_ban.route.js";
+import nhaXuatBanRouter from "./routes/nha-xuat-ban.route.js";
 import sachRouter from "./routes/sach.route.js";
 import docGiaRouter from "./routes/doc-gia.route.js";
 import nhanVienRouter from "./routes/nhan-vien.route.js";

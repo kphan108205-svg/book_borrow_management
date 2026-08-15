@@ -14,7 +14,11 @@ import {
   getSachByMa,
 } from "../controllers/sach.controller.js";
 
+import { authenticateToken } from "../middlewares/auth.middleware.js";
+
 const router = express.Router();
+
+router.use(authenticateToken);
 
 router.get("/", getAllSach);
 router.get("/:maSach", validateMaSachParam, getSachByMa);
