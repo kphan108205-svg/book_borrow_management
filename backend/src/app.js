@@ -8,6 +8,11 @@ import nhanVienRouter from "./routes/nhan-vien.route.js";
 import theoDoiMuonSachRouter from "./routes/theo-doi-muon-sach.route.js";
 import authRouter from "./routes/auth.route.js";
 
+import {
+  errorHandler,
+  notFoundHandler,
+} from "./middlewares/error.middleware.js";
+
 const app = express();
 
 app.use(cors());
@@ -26,12 +31,7 @@ app.use("/api/doc-gia", docGiaRouter);
 app.use("/api/nhan-vien", nhanVienRouter);
 app.use("/api/theo-doi-muon-sach", theoDoiMuonSachRouter);
 
-app.use((error, req, res, next) => {
-  console.log(error);
-
-  res.status(500).json({
-    message: "Đã xảy ra lỗi trên máy chủ",
-  });
-});
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 export default app;
