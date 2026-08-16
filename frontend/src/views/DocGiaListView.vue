@@ -1,13 +1,13 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
 
-import { getSachList, deleteSach } from "../services/sach.service.js";
+import { getDocGiaList, deleteDocGia } from "../services/doc-gia.service.js";
 
-const sachList = ref([]);
+const docGiaList = ref([]);
 const searchKeyword = ref("");
 const isLoading = ref(false);
 const errorMessage = ref("");
-const deletingMaSach = ref("");
+const deletingMaDocGia = ref("");
 
 const pagination = ref({
 	page: 1,
@@ -20,29 +20,30 @@ const displayedTotalPages = computed(() => {
 	return Math.max(pagination.value.totalPages, 1);
 });
 
-function formatCurrency(value) {
-	return new Intl.NumberFormat("vi-VN", {
-		style: "currency",
-		currency: "VND",
-	}).format(value);
+function formatDate(dateValue) {
+	if (!dateValue) {
+		return "";
+	}
+
+	return new Intl.DateTimeFormat("vi-VN").format(new Date(dateValue));
 }
 
-async function loadSach() {
+async function loadDocGia() {
 	isLoading.value = true;
 	errorMessage.value = "";
 
 	try {
-		const result = await getSachList({
+		const result = await getDocGiaList({
 			page: pagination.value.page,
 			limit: pagination.value.limit,
 			search: searchKeyword.value.trim(),
 		});
 
-		sachList.value = result.data;
+		docGiaList.value = result.data;
 		pagination.value = result.pagination;
 	} catch (error) {
 		errorMessage.value =
-			error.response?.data?.message ?? "Không thể tải danh sách sách";
+			error.response?.data?.message ?? "Không thể tải danh sách độc giả";
 	} finally {
 		isLoading.value = false;
 	}
@@ -50,7 +51,7 @@ async function loadSach() {
 
 async function handleSearch() {
 	pagination.value.page = 1;
-	await loadSach();
+	await loadDocGia();
 }
 
 async function changePage(newPage) {
@@ -63,40 +64,43 @@ async function changePage(newPage) {
 	}
 
 	pagination.value.page = newPage;
-	await loadSach();
+	await loadDocGia();
 }
 
-async function handleDelete(sach) {
+async function handleDelete(docGia) {
+	const hoTen = `${docGia.HoLot} ${docGia.Ten}`.trim();
+
 	const confirmed = window.confirm(
-		`Bạn có chắc muốn xóa sách "${sach.TenSach}" không?`,
+		`Bạn có chắc muốn xóa độc giả "${hoTen}" không?`,
 	);
 
 	if (!confirmed) {
 		return;
 	}
 
-	deletingMaSach.value = sach.MaSach;
+	deletingMaDocGia.value = docGia.MaDocGia;
 	errorMessage.value = "";
 
 	try {
-		await deleteSach(sach.MaSach);
+		await deleteDocGia(docGia.MaDocGia);
 
-		await loadSach();
+		await loadDocGia();
 
-		if (sachList.value.length === 0 && pagination.value.page > 1) {
+		if (docGiaList.value.length === 0 && pagination.value.page > 1) {
 			pagination.value.page -= 1;
-			await loadSach();
+			await loadDocGia();
 		}
 	} catch (error) {
 		errorMessage.value =
-			error.response?.data?.message || "Không thể xóa sách. Vui lòng thử lại.";
+			error.response?.data?.message ??
+			"Không thể xóa độc giả. Vui lòng thử lại.";
 	} finally {
-		deletingMaSach.value = "";
+		deletingMaDocGia.value = "";
 	}
 }
 
 onMounted(() => {
-	loadSach();
+	loadDocGia();
 });
 </script>
 
@@ -106,16 +110,16 @@ onMounted(() => {
 			class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4"
 		>
 			<div>
-				<h1 class="h3 mb-1">Quản lý sách</h1>
+				<h1 class="h3 mb-1">Quản lý độc giả</h1>
 
 				<p class="text-secondary mb-0">
-					Tìm kiếm và theo dõi sách trong thư viện
+					Tìm kiếm và theo dõi độc giả của thư viện
 				</p>
 			</div>
 
-			<RouterLink :to="{ name: 'sach-create' }" class="btn btn-primary">
+			<RouterLink :to="{ name: 'doc-gia-create' }" class="btn btn-primary">
 				<i class="fa-solid fa-plus me-2"></i>
-				Thêm sách
+				Thêm độc giả
 			</RouterLink>
 		</div>
 
@@ -127,7 +131,7 @@ onMounted(() => {
 							v-model="searchKeyword"
 							type="search"
 							class="form-control"
-							placeholder="Tìm theo mã, tên sách hoặc tác giả"
+							placeholder="Tìm theo mã, họ tên hoặc số điện thoại"
 						/>
 					</div>
 
@@ -150,61 +154,57 @@ onMounted(() => {
 				<div v-if="isLoading" class="py-5 text-center">
 					<div class="spinner-border text-primary" role="status"></div>
 
-					<p class="text-secondary mt-3 mb-0">Đang tải danh sách sách...</p>
+					<p class="text-secondary mt-3 mb-0">Đang tải danh sách độc giả...</p>
 				</div>
 
 				<div v-else class="table-responsive">
 					<table class="table table-hover align-middle mb-0">
 						<thead class="table-light">
 							<tr>
-								<th>Mã sách</th>
-								<th>Tên sách</th>
-								<th>Tác giả/Nguồn gốc</th>
-								<th>Nhà xuất bản</th>
-								<th>Năm xuất bản</th>
-								<th class="text-end">Đơn giá</th>
-								<th class="text-end">Số quyển</th>
+								<th>Mã độc giả</th>
+								<th>Họ và tên</th>
+								<th>Ngày sinh</th>
+								<th>Phái</th>
+								<th>Địa chỉ</th>
+								<th>Điện thoại</th>
 								<th>Thao tác</th>
 							</tr>
 						</thead>
 
 						<tbody>
-							<tr v-for="sach in sachList" :key="sach._id">
+							<tr v-for="docGia in docGiaList" :key="docGia._id">
 								<td class="fw-semibold">
-									{{ sach.MaSach }}
+									{{ docGia.MaDocGia }}
 								</td>
 
 								<td>
-									{{ sach.TenSach }}
+									{{ docGia.HoLot }}
+									{{ docGia.Ten }}
 								</td>
 
 								<td>
-									{{ sach.NguonGocTacGia }}
+									{{ formatDate(docGia.NgaySinh) }}
 								</td>
 
 								<td>
-									{{ sach.MaNXB }}
+									{{ docGia.Phai }}
 								</td>
 
 								<td>
-									{{ sach.NamXuatBan }}
+									{{ docGia.DiaChi }}
 								</td>
 
-								<td class="text-end">
-									{{ formatCurrency(sach.DonGia) }}
-								</td>
-
-								<td class="text-end">
-									{{ sach.SoQuyen }}
+								<td>
+									{{ docGia.DienThoai }}
 								</td>
 
 								<td>
 									<div class="d-flex gap-2">
 										<RouterLink
 											:to="{
-												name: 'sach-edit',
+												name: 'doc-gia-edit',
 												params: {
-													maSach: sach.MaSach,
+													maDocGia: docGia.MaDocGia,
 												},
 											}"
 											class="btn btn-sm btn-outline-primary"
@@ -216,22 +216,24 @@ onMounted(() => {
 										<button
 											type="button"
 											class="btn btn-sm btn-outline-danger"
-											:disabled="deletingMaSach === sach.MaSach"
-											@click="handleDelete(sach)"
+											:disabled="deletingMaDocGia === docGia.MaDocGia"
+											@click="handleDelete(docGia)"
 										>
 											<i class="fa-solid fa-trash me-1"></i>
 
 											{{
-												deletingMaSach === sach.MaSach ? "Đang xóa..." : "Xóa"
+												deletingMaDocGia === docGia.MaDocGia
+													? "Đang xóa..."
+													: "Xóa"
 											}}
 										</button>
 									</div>
 								</td>
 							</tr>
 
-							<tr v-if="sachList.length === 0">
+							<tr v-if="docGiaList.length === 0">
 								<td colspan="7" class="py-5 text-center text-secondary">
-									Không tìm thấy sách phù hợp
+									Không tìm thấy độc giả phù hợp
 								</td>
 							</tr>
 						</tbody>
@@ -244,7 +246,7 @@ onMounted(() => {
 					<small class="text-secondary">
 						Tổng cộng
 						{{ pagination.totalItems }}
-						sách
+						độc giả
 					</small>
 
 					<div class="d-flex align-items-center gap-2">

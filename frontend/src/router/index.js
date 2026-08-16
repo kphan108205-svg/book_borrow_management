@@ -4,6 +4,8 @@ import DashboardView from "../views/DashboardView.vue";
 import LoginView from "../views/LoginView.vue";
 import SachFormView from "../views/SachFormView.vue";
 import SachListView from "../views/SachListView.vue";
+import DocGiaFormView from "../views/DocGiaFormView.vue";
+import DocGiaListView from "../views/DocGiaListView.vue";
 import { getToken } from "../services/auth.service.js";
 
 const router = createRouter({
@@ -50,6 +52,21 @@ const router = createRouter({
 					path: "sach/:maSach/sua",
 					name: "sach-edit",
 					component: SachFormView,
+				},
+				{
+					path: "doc-gia",
+					name: "doc-gia-list",
+					component: DocGiaListView,
+				},
+				{
+					path: "doc-gia/them",
+					name: "doc-gia-create",
+					component: DocGiaFormView,
+				},
+				{
+					path: "doc-gia/:maDocGia/sua",
+					name: "doc-gia-edit",
+					component: DocGiaFormView,
 				},
 			],
 		},
