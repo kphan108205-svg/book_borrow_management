@@ -45,7 +45,12 @@ async function handleLogout() {
 						Độc giả
 					</RouterLink>
 
-					<span class="nav-link text-white-50"> Mượn và trả </span>
+					<RouterLink
+						:to="{ name: 'theo-doi-muon-sach-list' }"
+						class="nav-link text-white"
+					>
+						Mượn và trả
+					</RouterLink>
 				</nav>
 
 				<div class="d-flex align-items-center gap-3">

@@ -6,6 +6,8 @@ import SachFormView from "../views/SachFormView.vue";
 import SachListView from "../views/SachListView.vue";
 import DocGiaFormView from "../views/DocGiaFormView.vue";
 import DocGiaListView from "../views/DocGiaListView.vue";
+import TheoDoiMuonSachListView from "../views/TheoDoiMuonSachListView.vue";
+import PhieuMuonFormView from "../views/PhieuMuonFormView.vue";
 import { getToken } from "../services/auth.service.js";
 
 const router = createRouter({
@@ -67,6 +69,16 @@ const router = createRouter({
 					path: "doc-gia/:maDocGia/sua",
 					name: "doc-gia-edit",
 					component: DocGiaFormView,
+				},
+				{
+					path: "theo-doi-muon-sach",
+					name: "theo-doi-muon-sach-list",
+					component: TheoDoiMuonSachListView,
+				},
+				{
+					path: "theo-doi-muon-sach/them",
+					name: "phieu-muon-create",
+					component: PhieuMuonFormView,
 				},
 			],
 		},
