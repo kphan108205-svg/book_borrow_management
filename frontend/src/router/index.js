@@ -8,6 +8,8 @@ import DocGiaFormView from "../views/DocGiaFormView.vue";
 import DocGiaListView from "../views/DocGiaListView.vue";
 import TheoDoiMuonSachListView from "../views/TheoDoiMuonSachListView.vue";
 import PhieuMuonFormView from "../views/PhieuMuonFormView.vue";
+import NhaXuatBanListView from "../views/NhaXuatBanListView.vue";
+import NhaXuatBanFormView from "../views/NhaXuatBanFormView.vue";
 import { getToken } from "../services/auth.service.js";
 
 const router = createRouter({
@@ -79,6 +81,21 @@ const router = createRouter({
 					path: "theo-doi-muon-sach/them",
 					name: "phieu-muon-create",
 					component: PhieuMuonFormView,
+				},
+				{
+					path: "nha-xuat-ban",
+					name: "nha-xuat-ban-list",
+					component: NhaXuatBanListView,
+				},
+				{
+					path: "nha-xuat-ban/them",
+					name: "nha-xuat-ban-create",
+					component: NhaXuatBanFormView,
+				},
+				{
+					path: "nha-xuat-ban/:maNXB/sua",
+					name: "nha-xuat-ban-edit",
+					component: NhaXuatBanFormView,
 				},
 			],
 		},

@@ -39,6 +39,13 @@ async function handleLogout() {
 					</RouterLink>
 
 					<RouterLink
+						:to="{ name: 'nha-xuat-ban-list' }"
+						class="nav-link text-white"
+					>
+						Nhà xuất bản
+					</RouterLink>
+
+					<RouterLink
 						:to="{ name: 'doc-gia-list' }"
 						class="nav-link text-white"
 					>
