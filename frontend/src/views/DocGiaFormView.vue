@@ -201,7 +201,7 @@ onMounted(async () => {
 						/>
 					</div>
 
-					<div class="col-md-5">
+					<div class="col-md-4">
 						<label for="hoLot" class="form-label"> Họ lót </label>
 
 						<input
@@ -213,7 +213,7 @@ onMounted(async () => {
 						/>
 					</div>
 
-					<div class="col-md-3">
+					<div class="col-md-4">
 						<label for="ten" class="form-label"> Tên </label>
 
 						<input

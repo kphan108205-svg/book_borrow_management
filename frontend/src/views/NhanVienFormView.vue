@@ -175,7 +175,7 @@ onMounted(async () => {
 		<form v-else class="card border-0 shadow-sm" @submit.prevent="handleSubmit">
 			<div class="card-body p-4">
 				<div class="row g-4">
-					<div class="col-md-4">
+					<div class="col-md-6">
 						<label for="msnv" class="form-label"> Mã nhân viên </label>
 
 						<input
@@ -188,7 +188,7 @@ onMounted(async () => {
 						/>
 					</div>
 
-					<div class="col-md-8">
+					<div class="col-md-6">
 						<label for="hoTenNV" class="form-label"> Họ tên nhân viên </label>
 
 						<input
@@ -239,7 +239,7 @@ onMounted(async () => {
 						/>
 					</div>
 
-					<div class="col-12">
+					<div class="col-md-6">
 						<label for="diaChi" class="form-label"> Địa chỉ </label>
 
 						<input

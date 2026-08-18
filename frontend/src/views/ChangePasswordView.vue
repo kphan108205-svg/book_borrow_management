@@ -99,7 +99,7 @@ async function handleSubmit() {
 			</RouterLink>
 		</div>
 
-		<div class="row">
+		<div class="row justify-content-center">
 			<div class="col-md-6 col-lg-5">
 				<div v-if="errorMessage" class="alert alert-danger">
 					{{ errorMessage }}
