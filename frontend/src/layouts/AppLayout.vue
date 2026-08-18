@@ -58,6 +58,14 @@ async function handleLogout() {
 					>
 						Mượn và trả
 					</RouterLink>
+
+					<RouterLink
+						v-if="currentUser?.ChucVu === 'Quản lý thư viện'"
+						:to="{ name: 'nhan-vien-list' }"
+						class="nav-link text-white"
+					>
+						Nhân viên
+					</RouterLink>
 				</nav>
 
 				<div class="d-flex align-items-center gap-3">
@@ -70,6 +78,14 @@ async function handleLogout() {
 							{{ currentUser?.ChucVu }}
 						</div>
 					</div>
+
+					<RouterLink
+						:to="{ name: 'change-password' }"
+						class="btn btn-sm btn-outline-light"
+					>
+						<i class="fa-solid fa-key me-2"></i>
+						Đổi mật khẩu
+					</RouterLink>
 
 					<button
 						type="button"

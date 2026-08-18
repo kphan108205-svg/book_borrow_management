@@ -10,7 +10,10 @@ import TheoDoiMuonSachListView from "../views/TheoDoiMuonSachListView.vue";
 import PhieuMuonFormView from "../views/PhieuMuonFormView.vue";
 import NhaXuatBanListView from "../views/NhaXuatBanListView.vue";
 import NhaXuatBanFormView from "../views/NhaXuatBanFormView.vue";
-import { getToken } from "../services/auth.service.js";
+import NhanVienListView from "../views/NhanVienListView.vue";
+import NhanVienFormView from "../views/NhanVienFormView.vue";
+import ChangePasswordView from "../views/ChangePasswordView.vue";
+import { getToken, getCurrentUser } from "../services/auth.service.js";
 
 const router = createRouter({
 	history: createWebHistory(),
@@ -97,6 +100,35 @@ const router = createRouter({
 					name: "nha-xuat-ban-edit",
 					component: NhaXuatBanFormView,
 				},
+				{
+					path: "nhan-vien",
+					name: "nhan-vien-list",
+					component: NhanVienListView,
+					meta: {
+						requiresRole: "Quản lý thư viện",
+					},
+				},
+				{
+					path: "nhan-vien/them",
+					name: "nhan-vien-create",
+					component: NhanVienFormView,
+					meta: {
+						requiresRole: "Quản lý thư viện",
+					},
+				},
+				{
+					path: "nhan-vien/:msnv/sua",
+					name: "nhan-vien-edit",
+					component: NhanVienFormView,
+					meta: {
+						requiresRole: "Quản lý thư viện",
+					},
+				},
+				{
+					path: "doi-mat-khau",
+					name: "change-password",
+					component: ChangePasswordView,
+				},
 			],
 		},
 	],
@@ -104,6 +136,7 @@ const router = createRouter({
 
 router.beforeEach((to) => {
 	const token = getToken();
+	const currentUser = getCurrentUser();
 
 	if (to.meta.requiresAuth && !token) {
 		return {
@@ -112,6 +145,12 @@ router.beforeEach((to) => {
 	}
 
 	if (to.meta.guestOnly && token) {
+		return {
+			name: "dashboard",
+		};
+	}
+
+	if (to.meta.requiresRole && currentUser?.ChucVu !== to.meta.requiresRole) {
 		return {
 			name: "dashboard",
 		};
